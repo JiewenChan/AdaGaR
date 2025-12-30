@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AdaGaR</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+
+<body>
+  <section id="gabor-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <p class="hero-kicker">DEMO</p>
+        <h1>AdaGaR</h1>
+        <p class="hero-description">
+          <b>AdaGaR</b>: <u>Ada</u>ptive <u>Ga</u>bor <u>R</u>epresentation for Dynamic Scene Reconstruction
+        </p>
+      </div>
+      <div class="hero-viewer">
+        <div id="hero-video-wrapper" aria-label="AdaGaR teaser video">
+          <video id="hero-teaser-video" autoplay loop muted playsinline preload="auto">
+            <source src="static/videos/teaser/hero_teaser.mp4" type="video/mp4">
+            Your browser does not support the teaser preview.
+          </video>
+        </div>
+        <div class="hero-video-label" id="hero-video-label">Original Video</div>
+      </div>
+    </div>
+    <div class="hero-scroll-hint">Scroll down to see AdaGaR in action</div>
+    <button id="scroll-down-btn" class="scroll-down-btn">
+      <span>Enter Main Content</span>
+      <span class="scroll-arrow">&darr;</span>
+    </button>
+  </section>
+
+
+
+  <div id="main-content">
+  <center>
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title"><b>AdaGaR</b>: <u>Ada</u>ptive <u>Ga</u>bor <u>R</u>epresentation for Dynamic Scene Reconstruction</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://jiewenchan.github.io/">Jiewen Chan</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://ericzzj1989.github.io/">Zhenjun Zhao</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://yulunalexliu.github.io/">Yu-Lun Liu</a><sup>1</sup>,
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>National Yang Ming Chiao Tung University</span>
+            <span class="author-block"><sup>2</sup>University of Zaragoza</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    </center>
+
+
+  <div class="column has-text-centered">
+    <div class="publication-links"> 
+      <span class="link-block">
+        <a href=""
+            class="external-link button is-normal is-rounded is-dark">
+          <span class="icon">
+              <i class="ai ai-arxiv"></i>
+          </span>
+          <span>arXiv</span>
+        </a>
+      </span>
+
+      <!-- Code Link. -->
+      <span class="link-block">
+        <a href=""
+            class="external-link button is-normal is-rounded is-dark">
+          <span class="icon">
+              <i class="fab fa-github"></i>
+          </span>
+          <span>Code(Coming Soon)</span>
+          </a>
+      </span>
+  </div>
+
+
+  <section id="abstract-section">
+    <h2 class="title is-3">Abstract</h2>
+    <div class="content has-text-justified">
+    <p>Reconstructing dynamic 3D scenes from monocular videos requires simultaneously capturing high-frequency appearance details and temporally continuous motion. Existing methods using single Gaussian primitives are limited by their low-pass filtering nature, while standard Gabor functions introduce energy instability. Moreover, lack of temporal continuity constraints often leads to motion artifacts during interpolation.</p>
+    <p>We propose <strong>AdaGaR</strong>, a unified framework addressing both frequency adaptivity and temporal continuity in explicit dynamic scene modeling. We introduce Adaptive Gabor Representation, extending Gaussians through learnable frequency weights and adaptive energy compensation to balance detail capture and stability. For temporal continuity, we employ Cubic Hermite Splines with Temporal Curvature Regularization to ensure smooth motion evolution. An Adaptive Initialization mechanism combining depth estimation, point tracking, and foreground masks establishes stable point cloud distributions in early training.</p>
+    <p>Experiments on Tap-Vid DAVIS demonstrate state-of-the-art performance (PSNR 35.49, SSIM 0.9433, LPIPS 0.0723) and strong generalization across frame interpolation, depth consistency, video editing, and stereo view synthesis.</p>
+    </div>
+  </section>
+
+  <section id="pipeline-section">
+    <h2 class="title is-3">Pipeline</h2>
+    <figure>
+      <img src="static/figs/pipeline.png" alt="AdaGaR pipeline diagram showing Adaptive Gabor primitives and temporal interpolation">
+      <figcaption>
+        We present AdaGaR, an explicit 3D video representation that preserves high-frequency appearance while ensuring temporally smooth motion. The video is modeled as a set of dynamic Adaptive Gabor primitives in an orthographic camera coordinate system, where spatial texture and structure are encoded by the primitives and temporal evolution is interpolated with Cubic Hermite Splines to guarantee geometric and temporal consistency. Adaptive Gabor Representation extends Gaussian primitives with learnable frequency weights and energy compensation, enabling frequency-adaptive detail capture while maintaining energy stability. Coupled with temporal curvature regularization and multi-supervision losses, our approach delivers high visual quality and robust temporal consistency, with strong applicability to frame interpolation, depth consistency, video editing, and related tasks.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section id="adaptive-gabor">
+    <h2 class="title is-3">Adaptive Gaussian &rarr; Gabor Transition</h2>
+    <div class="content has-text-justified">
+      <p>
+        The slider below controls the aggregated wave coefficients that modulate our Gaussian primitives.
+        Increasing the coefficient boosts the sinusoidal carrier with frequency symbolized by &omega;, letting us move from pure Gaussian support to a detailed Adaptive Gabor representation.
+      </p>
+    </div>
+    <div class="gabor-demo">
+      <div class="gabor-panels gabor-panels-1d">
+        <div class="gabor-panel">
+          <h3>Gaussian Envelope (1-D)</h3>
+          <canvas id="gaussian-1d" width="480" height="200" aria-label="1D Gaussian profile"></canvas>
+        </div>
+        <div class="gabor-panel">
+          <h3>Gabor (1-D)</h3>
+          <canvas id="opacity-1d" width="480" height="200" aria-label="1D opacity profile"></canvas>
+        </div>
+      </div>
+      <div class="gabor-slider">
+        <label for="omega-slider">Wave coefficients (&omega;)</span> = <span id="omega-value">0.35</span></label>
+        <input id="omega-slider" type="range" min="0" max="1" step="0.01" value="0.35">
+        <div class="gabor-info">
+
+        </div>
+      </div>
+      <div class="gabor-panels">
+        <div class="gabor-panel wide">
+          <h3>2-D Gaussian</h3>
+          <canvas id="gaussian-canvas" width="480" height="200" aria-label="Gaussian primitive visualization"></canvas>
+        </div>
+        <div class="gabor-panel wide">
+          <h3>2-D Gabor</h3>
+          <canvas id="opacity-canvas" width="480" height="200" aria-label="Opacity map visualization"></canvas>
+          <p class="gabor-panel-note">
+            The CUDA-style accumulation multiplies the Gaussian support with sinusoidal weights
+            to update <code>alpha</code>. The visualization shows how this interaction sculpts opacity.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<div id="video-result"><iframe id="video-result-frame" src="slider.html" title="AdaGaR video comparison" loading="lazy" frameborder="0" allowfullscreen></iframe></div>
+
+  <section id="application-showcase">
+    <h2 class="title is-3">Applications</h2>
+    <div id="application-selector">
+      <button class="app-btn active" data-app="frame_interpolation">Frame Interpolation</button>
+      <button class="app-btn" data-app="stereo">Stereo</button>
+      <button class="app-btn" data-app="video_editing">Video Editing</button>
+    </div>
+    <div id="application-title" class="hidden"></div>
+    <div id="video-application-grid"></div>
+  </section>
+
+<script>
+  (function() {
+    var sliderFrame = document.getElementById("video-result-frame");
+    if (!sliderFrame) return;
+
+    function resizeSliderFrame() {
+      if (!sliderFrame.contentWindow) return;
+      try {
+        var doc = sliderFrame.contentWindow.document;
+        var height = doc.documentElement ? doc.documentElement.scrollHeight : 0;
+        if (doc.body) {
+          height = Math.max(height, doc.body.scrollHeight);
+        }
+        if (height > 0) {
+          sliderFrame.style.height = height + "px";
+        }
+      } catch (err) {
+        console.warn("Unable to resize slider frame:", err);
+      }
+    }
+
+    sliderFrame.addEventListener("load", function() {
+      resizeSliderFrame();
+      setTimeout(resizeSliderFrame, 300);
+    });
+    window.addEventListener("resize", function() {
+      setTimeout(resizeSliderFrame, 200);
+    });
+  })();
+
+  (function() {
+    var video = document.getElementById("hero-teaser-video");
+    var label = document.getElementById("hero-video-label");
+    if (!video || !label) return;
+
+    var segments = [
+      { start: 0, text: "Original Video" },
+      { start: 2.4, text: "Frame Interpolation" },
+      { start: 4.8, text: "Video Editing" },
+      { start: 7.2, text: "Stereo" }
+    ];
+
+    function refreshLabel(time) {
+      var active = segments[0].text;
+      for (var i = 0; i < segments.length; i++) {
+        if (time >= segments[i].start - 0.05) {
+          active = segments[i].text;
+        } else {
+          break;
+        }
+      }
+      label.textContent = active;
+    }
+
+    video.addEventListener("timeupdate", function() {
+      var time = video.currentTime;
+      var duration = video.duration || segments[segments.length - 1].start + 3;
+      if (duration > 0) {
+        time = time % duration;
+      }
+      refreshLabel(time);
+    });
+
+    video.addEventListener("loadedmetadata", function() {
+      refreshLabel(0);
+    });
+  })();
+
+  (function() {
+    var heroSection = document.getElementById("gabor-hero");
+    var mainContent = document.getElementById("main-content");
+    if (!heroSection || !mainContent) return;
+
+    var isAnimating = false;
+    var snapDelay = 600;
+
+    function snapTo(position) {
+      if (isAnimating) return;
+      isAnimating = true;
+      window.scrollTo({ top: position, behavior: "smooth" });
+      setTimeout(function() {
+        isAnimating = false;
+      }, snapDelay);
+    }
+
+    function getBoundary() {
+      return mainContent.offsetTop || heroSection.offsetHeight;
+    }
+
+    function handleWheel(e) {
+      if (isAnimating) return;
+      var boundary = getBoundary();
+      var scrollTop = window.scrollY || document.documentElement.scrollTop;
+      var delta = e.deltaY;
+
+      if (scrollTop < boundary && delta > 0) {
+        e.preventDefault();
+        snapTo(boundary);
+      } else if (scrollTop <= boundary + 2 && scrollTop > 0 && delta < 0) {
+        e.preventDefault();
+        snapTo(0);
+      } else if (scrollTop >= boundary && scrollTop < boundary + 10 && delta < 0) {
+        e.preventDefault();
+        snapTo(0);
+      }
+    }
+
+    var scrollButton = document.getElementById("scroll-down-btn");
+    if (scrollButton) {
+      scrollButton.addEventListener("click", function(evt) {
+        evt.preventDefault();
+        snapTo(getBoundary());
+      });
+    }
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+  })();
+
+  (function() {
+    var applications = {
+      frame_interpolation: {
+        name: "Frame Interpolation",
+        type: "triple",
+        videoList: [
+          { name: "bear" },
+          { name: "blackswan" },
+          { name: "flamingo" },
+          { name: "mallard-water" },
+          { name: "planes-water" }
+        ]
+      },
+      stereo: {
+        name: "Stereo",
+        type: "dual",
+        videoList: [
+          { name: "boat" },
+          { name: "gold-fish" },
+          { name: "koala" },
+          { name: "pigs" },
+          { name: "rhino" }
+        ]
+      },
+      video_editing: {
+        name: "Video Editing",
+        type: "grid",
+        videoList: [
+          { name: "blackswan" },
+          { name: "boat" },
+          { name: "car-roundabout" },
+          { name: "car-shadow" },
+          { name: "car-turn" },
+          { name: "mallard-water" }
+        ]
+      }
+    };
+
+    var currentApplication = "frame_interpolation";
+    var buttons = document.querySelectorAll("#application-selector .app-btn");
+    var grid = document.getElementById("video-application-grid");
+    var title = document.getElementById("application-title");
+
+    if (!grid || !buttons.length) return;
+
+    function renderApplicationVideos() {
+      var appConfig = applications[currentApplication];
+      if (!appConfig) return;
+
+      grid.innerHTML = "";
+      grid.className = "";
+      title.classList.remove("hidden");
+      title.textContent = appConfig.name;
+
+      if (appConfig.type === "triple") {
+        grid.className = "app-video-grid-rows";
+        appConfig.videoList.forEach(function(video) {
+          var videoRow = document.createElement("div");
+          videoRow.className = "app-video-row";
+
+          var videoLabel = document.createElement("div");
+          videoLabel.className = "app-video-row-label";
+          videoLabel.textContent = video.name;
+
+          var rowContainer = document.createElement("div");
+          rowContainer.className = "app-video-row-container-3";
+
+          var inputItem = document.createElement("div");
+          inputItem.className = "app-video-compare-item";
+          var inputLabel = document.createElement("div");
+          inputLabel.className = "app-video-compare-label";
+          inputLabel.textContent = "Input";
+          var inputVideo = document.createElement("video");
+          inputVideo.src = "static/videos/frame_interpolation_input/" + video.name + ".mp4";
+          inputVideo.loop = true;
+          inputVideo.autoplay = true;
+          inputVideo.controls = true;
+          inputItem.appendChild(inputLabel);
+          inputItem.appendChild(inputVideo);
+
+          var savItem = document.createElement("div");
+          savItem.className = "app-video-compare-item";
+          var savLabel = document.createElement("div");
+          savLabel.className = "app-video-compare-label";
+          savLabel.textContent = "Splatter A Video";
+          var savVideo = document.createElement("video");
+          savVideo.src = "static/videos/frame_interpolation_sav/" + video.name + ".mp4";
+          savVideo.loop = true;
+          savVideo.autoplay = true;
+          savVideo.controls = true;
+          savItem.appendChild(savLabel);
+          savItem.appendChild(savVideo);
+
+          var oursItem = document.createElement("div");
+          oursItem.className = "app-video-compare-item";
+          var oursLabel = document.createElement("div");
+          oursLabel.className = "app-video-compare-label";
+          oursLabel.textContent = "Ours";
+          var oursVideo = document.createElement("video");
+          oursVideo.src = "static/videos/frame_interpolation/" + video.name + ".mp4";
+          oursVideo.loop = true;
+          oursVideo.autoplay = true;
+          oursVideo.controls = true;
+          oursItem.appendChild(oursLabel);
+          oursItem.appendChild(oursVideo);
+
+          rowContainer.appendChild(inputItem);
+          rowContainer.appendChild(savItem);
+          rowContainer.appendChild(oursItem);
+
+          videoRow.appendChild(videoLabel);
+          videoRow.appendChild(rowContainer);
+          grid.appendChild(videoRow);
+        });
+      } else if (appConfig.type === "dual") {
+        grid.className = "app-video-grid-rows";
+        appConfig.videoList.forEach(function(video) {
+          var videoRow = document.createElement("div");
+          videoRow.className = "app-video-row";
+
+          var videoLabel = document.createElement("div");
+          videoLabel.className = "app-video-row-label";
+          videoLabel.textContent = video.name;
+
+          var rowContainer = document.createElement("div");
+          rowContainer.className = "app-video-row-container";
+
+          var inputItem = document.createElement("div");
+          inputItem.className = "app-video-compare-item";
+          var inputLabel = document.createElement("div");
+          inputLabel.className = "app-video-compare-label";
+          inputLabel.textContent = "Input";
+          var inputVideo = document.createElement("video");
+          inputVideo.src = "static/videos/" + currentApplication + "_input/" + video.name + ".mp4";
+          inputVideo.loop = true;
+          inputVideo.autoplay = true;
+          inputVideo.controls = true;
+          inputItem.appendChild(inputLabel);
+          inputItem.appendChild(inputVideo);
+
+          var outputItem = document.createElement("div");
+          outputItem.className = "app-video-compare-item";
+          var outputLabel = document.createElement("div");
+          outputLabel.className = "app-video-compare-label";
+          outputLabel.textContent = "Output";
+          var outputVideo = document.createElement("video");
+          outputVideo.src = "static/videos/" + currentApplication + "/" + video.name + ".mp4";
+          outputVideo.loop = true;
+          outputVideo.autoplay = true;
+          outputVideo.controls = true;
+          outputItem.appendChild(outputLabel);
+          outputItem.appendChild(outputVideo);
+
+          rowContainer.appendChild(inputItem);
+          rowContainer.appendChild(outputItem);
+          videoRow.appendChild(videoLabel);
+          videoRow.appendChild(rowContainer);
+          grid.appendChild(videoRow);
+        });
+      } else {
+        grid.className = "app-video-grid-3col";
+        appConfig.videoList.forEach(function(video) {
+          var videoItem = document.createElement("div");
+          videoItem.className = "app-video-item";
+
+          var videoLabel = document.createElement("div");
+          videoLabel.className = "app-video-label";
+          videoLabel.textContent = video.name;
+
+          var videoElement = document.createElement("video");
+          videoElement.src = "static/videos/video_editing/" + video.name + ".mp4";
+          videoElement.loop = true;
+          videoElement.autoplay = true;
+          videoElement.controls = true;
+
+          videoItem.appendChild(videoLabel);
+          videoItem.appendChild(videoElement);
+          grid.appendChild(videoItem);
+        });
+      }
+    }
+
+    buttons.forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var appName = btn.dataset.app;
+        if (!applications[appName]) return;
+        currentApplication = appName;
+        buttons.forEach(function(other) {
+          other.classList.toggle("active", other === btn);
+        });
+        renderApplicationVideos();
+      });
+    });
+
+    renderApplicationVideos();
+  })();
+
+  (function() {
+    var gaussianCanvas = document.getElementById("gaussian-canvas");
+    var opacityCanvas = document.getElementById("opacity-canvas");
+    var gaussian1dCanvas = document.getElementById("gaussian-1d");
+    var opacity1dCanvas = document.getElementById("opacity-1d");
+    var omegaSlider = document.getElementById("omega-slider");
+    var omegaValue = document.getElementById("omega-value");
+
+    if (!gaussianCanvas || !opacityCanvas || !gaussian1dCanvas || !opacity1dCanvas || !omegaSlider) return;
+
+    var gaussianCtx = gaussianCanvas.getContext("2d");
+    var opacityCtx = opacityCanvas.getContext("2d");
+    var gaussian1dCtx = gaussian1dCanvas.getContext("2d");
+    var opacity1dCtx = opacity1dCanvas.getContext("2d");
+
+    function sampleGaussian2D(x, y) {
+      var sigma = 0.7;
+      return Math.exp(-0.5 * (x * x + y * y) / (sigma * sigma));
+    }
+
+    function sampleGaussian1D(x) {
+      var sigma = 0.7;
+      return Math.exp(-0.5 * (x * x) / (sigma * sigma));
+    }
+
+    function blendColor(a, b, t) {
+      return [
+        a[0] + (b[0] - a[0]) * t,
+        a[1] + (b[1] - a[1]) * t,
+        a[2] + (b[2] - a[2]) * t
+      ];
+    }
+
+    var baseColor = [255, 255, 255];
+    var gaussianOuter = [255, 255, 255];
+    var gaussianMid = [161, 202, 255];
+    var gaussianCore = [104, 156, 255];
+    var opacityAccent = [124, 77, 255];
+
+    function paletteGaussian(val) {
+      var t = Math.min(1, Math.max(0, val));
+      var accent = t < 0.5
+        ? blendColor(gaussianOuter, gaussianMid, t * 2)
+        : blendColor(gaussianMid, gaussianCore, (t - 0.5) * 2);
+      return accent;
+    }
+
+    function paletteOpacity(val) {
+      var t = Math.pow(Math.min(1, Math.max(0, val)), 0.85);
+      return blendColor(baseColor, opacityAccent, t);
+    }
+
+    function drawPrimitive(ctx, sampler, palette) {
+      var width = ctx.canvas.width;
+      var height = ctx.canvas.height;
+      var imageData = ctx.createImageData(width, height);
+      var data = imageData.data;
+
+      for (var py = 0; py < height; py++) {
+        var ny = (py / height) * 2 - 1;
+        for (var px = 0; px < width; px++) {
+          var nx = (px / width) * 2 - 1;
+          var value = sampler(nx * 1.6, ny * 1.6);
+          var color = palette(Math.max(-1, Math.min(1, value)));
+          var idx = (py * width + px) * 4;
+          data[idx] = color[0];
+          data[idx + 1] = color[1];
+          data[idx + 2] = color[2];
+          data[idx + 3] = 255;
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+    }
+
+    function drawCurve1D(ctx, fn, color) {
+      var width = ctx.canvas.width;
+      var height = ctx.canvas.height;
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "#05070f";
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (var px = 0; px <= width; px++) {
+        var x = (px / width) * 6 - 3;
+        var y = fn(x);
+        var py = height - ((y + 1) / 2) * height;
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    function updatePlots() {
+      var omega = parseFloat(omegaSlider.value);
+      omegaValue.textContent = omega.toFixed(2);
+      var freq = 1 + omega * 8;
+      var angularFreq = 2 * Math.PI * freq;
+      var gamma = 0.0;
+      var weight = omega;
+
+      drawPrimitive(gaussianCtx, function(x, y) {
+        return sampleGaussian2D(x, y);
+      }, paletteGaussian);
+
+      drawPrimitive(opacityCtx, function(x, y) {
+        var gaussian = sampleGaussian2D(x, y);
+        var carrier = Math.cos(angularFreq * x);
+        var sadap = gamma + (1 - gamma) * (1 - weight) + weight * carrier;
+        return Math.min(1, Math.max(0, gaussian * sadap));
+      }, paletteOpacity);
+
+      drawCurve1D(gaussian1dCtx, function(x) {
+        return sampleGaussian1D(x);
+      }, "#4ec7f7");
+
+      drawCurve1D(opacity1dCtx, function(x) {
+        var gaussian = sampleGaussian1D(x);
+        var carrier = Math.cos(angularFreq * x);
+        var sadap = gamma + (1 - gamma) * (1 - weight) + weight * carrier;
+        return Math.min(1, Math.max(0, gaussian * sadap));
+      }, "#7c4dff");
+    }
+    omegaSlider.addEventListener("input", updatePlots);
+    updatePlots();
+  })();
+</script>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Website template borrowed from <a
+              href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>. 
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<div>
+</body>
+</html>

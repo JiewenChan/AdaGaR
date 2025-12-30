@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AdaGaR Video Reconstruction Slider</title>
+  <link rel="stylesheet" href="./static/css/style.css">
+</head>
+<body>
+  <div id="video-slider">
+    <button id="prev-btn" class="slider-btn">&lsaquo;</button>
+    <div id="video-info">
+      <div id="video-title"></div>
+      <div id="video-counter"></div>
+    </div>
+    <button id="next-btn" class="slider-btn">&rsaquo;</button>
+  </div>
+
+  <div id="method-selector">
+    <button class="method-btn active" data-method="gt">GT vs Ours</button>
+    <button class="method-btn" data-method="codef">CoDeF vs Ours</button>
+    <button class="method-btn" data-method="sav">Splatter A Video vs Ours</button>
+  </div>
+
+  <div id="video-reconstruction-title">Video Reconstruction</div>
+
+  <div id="video-compare-container">
+    <video id="src" loop autoplay muted playsinline></video>
+    <div id="video-clipper">
+      <video id="tgt" loop autoplay muted playsinline></video>
+    </div>
+    <div id="play-pause-icon">
+      <div id="play-icon"></div>
+      <div id="pause-icon"></div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var videoList = [
+        { name: "car-shadow" },
+        { name: "elephant" },
+        { name: "hike" },
+        { name: "boat" }
+      ];
+
+      var methods = [
+        { name: "gt", displayName: "GT vs Ours", folder: "gt" },
+        { name: "codef", displayName: "CoDeF vs Ours", folder: "codef" },
+        { name: "sav", displayName: "Splatter A Video vs Ours", folder: "sav" }
+      ];
+
+      var currentVideoIndex = 0;
+      var currentMethodIndex = 0;
+
+      var v = document.getElementById("src");
+      var v2 = document.getElementById("tgt");
+      var videoContainer = document.getElementById("video-compare-container");
+      var videoClipper = document.getElementById("video-clipper");
+      var clippedVideo = videoClipper.getElementsByTagName("video")[0];
+      var playPauseIcon = document.getElementById("play-pause-icon");
+      var playIcon = document.getElementById("play-icon");
+      var pauseIcon = document.getElementById("pause-icon");
+      var prevBtn = document.getElementById("prev-btn");
+      var nextBtn = document.getElementById("next-btn");
+      var videoTitle = document.getElementById("video-title");
+      var videoCounter = document.getElementById("video-counter");
+      var methodButtons = document.querySelectorAll(".method-btn");
+
+      var cachedRect = null;
+      var isMouseInside = false;
+      var rafId = null;
+      var pendingUpdate = null;
+
+      function updateContainerSize() {
+        var methodSelector = document.getElementById("method-selector");
+        var selectorWidth = methodSelector ? methodSelector.offsetWidth : 0;
+
+        if (selectorWidth > 0) {
+          videoContainer.style.width = selectorWidth + "px";
+          v.style.width = "100%";
+          v.style.maxWidth = "100%";
+
+          setTimeout(function() {
+            var actualHeight = v.offsetHeight;
+            if (actualHeight > 0) {
+              videoClipper.style.height = actualHeight + "px";
+            }
+          }, 50);
+        } else {
+          var displayHeight = v.offsetHeight;
+          if (displayHeight > 0) {
+            videoClipper.style.height = displayHeight + "px";
+          }
+        }
+      }
+
+      function updateVideoSource() {
+        var currentVideo = videoList[currentVideoIndex];
+        var currentMethod = methods[currentMethodIndex];
+
+        var oursVideoPath = "static/videos/ours/" + currentVideo.name + ".mp4";
+        var methodVideoPath = "static/videos/" + currentMethod.folder + "/" + currentVideo.name + ".mp4";
+
+        var wasPlaying = !v.paused;
+        var currentTime = v.currentTime;
+
+        v.src = oursVideoPath;
+        v2.src = methodVideoPath;
+
+        v.load();
+        v2.load();
+
+        if (wasPlaying) {
+          Promise.all([v.play().catch(function(){}), v2.play().catch(function(){})]);
+        }
+
+        v.currentTime = currentTime;
+        v2.currentTime = currentTime;
+
+        videoTitle.textContent = currentVideo.name;
+        videoCounter.textContent = (currentVideoIndex + 1) + " / " + videoList.length;
+        prevBtn.disabled = (currentVideoIndex === 0);
+        nextBtn.disabled = (currentVideoIndex === videoList.length - 1);
+
+        updatePlayPauseIcon();
+        setTimeout(updateContainerSize, 100);
+        invalidateRectCache();
+      }
+
+      function switchVideo(index) {
+        if (index < 0 || index >= videoList.length) return;
+        currentVideoIndex = index;
+        updateVideoSource();
+      }
+
+      function switchMethod(index) {
+        if (index < 0 || index >= methods.length) return;
+        currentMethodIndex = index;
+        methodButtons.forEach(function(btn, i) {
+          if (i === index) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
+        updateVideoSource();
+      }
+
+      function video_click() {
+        if (v.paused) {
+          v.play();
+          v2.play();
+        } else {
+          v.pause();
+          v2.pause();
+        }
+        v.currentTime = v2.currentTime;
+        v2.currentTime = v.currentTime;
+      }
+
+      function updatePlayPauseIcon() {
+        if (v.paused) {
+          playIcon.style.display = "block";
+          pauseIcon.style.display = "none";
+        } else {
+          playIcon.style.display = "none";
+          pauseIcon.style.display = "block";
+        }
+      }
+
+      function getContainerRect() {
+        if (!cachedRect) {
+          cachedRect = videoContainer.getBoundingClientRect();
+        }
+        return cachedRect;
+      }
+
+      function invalidateRectCache() {
+        cachedRect = null;
+      }
+
+      function isInsideContainer(x, y) {
+        var rect = getContainerRect();
+        return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+      }
+
+      function updateSliderPosition(x, y) {
+        var rect = getContainerRect();
+        var position = ((x - rect.left) / videoContainer.offsetWidth) * 100;
+
+        if (position >= 0 && position <= 100) {
+          videoClipper.style.width = position + "%";
+          clippedVideo.style.width = ((100 / Math.max(position, 1)) * 100) + "%";
+          clippedVideo.style.zIndex = 3;
+        }
+      }
+
+      function trackLocation(e) {
+        var x = e.pageX || (e.touches && e.touches[0] ? e.touches[0].pageX : 0);
+        var y = e.pageY || (e.touches && e.touches[0] ? e.touches[0].pageY : 0);
+
+        pendingUpdate = { x: x, y: y };
+
+        if (!rafId) {
+          rafId = requestAnimationFrame(function() {
+            if (pendingUpdate) {
+              var updateX = pendingUpdate.x;
+              var updateY = pendingUpdate.y;
+
+              if (!isInsideContainer(updateX, updateY)) {
+                if (isMouseInside) {
+                  isMouseInside = false;
+                  playPauseIcon.style.opacity = "0";
+                }
+              } else {
+                if (!isMouseInside) {
+                  isMouseInside = true;
+                  playPauseIcon.style.opacity = "1";
+                  updatePlayPauseIcon();
+                }
+                updateSliderPosition(updateX, updateY);
+              }
+
+              pendingUpdate = null;
+              rafId = null;
+            }
+          });
+        }
+      }
+
+      prevBtn.addEventListener("click", function() {
+        if (currentVideoIndex > 0) {
+          switchVideo(currentVideoIndex - 1);
+        }
+      });
+
+      nextBtn.addEventListener("click", function() {
+        if (currentVideoIndex < videoList.length - 1) {
+          switchVideo(currentVideoIndex + 1);
+        }
+      });
+
+      methodButtons.forEach(function(btn, index) {
+        btn.addEventListener("click", function() {
+          switchMethod(index);
+        });
+      });
+
+      videoContainer.addEventListener("click", video_click);
+
+      videoContainer.addEventListener("mouseenter", function() {
+        isMouseInside = true;
+        invalidateRectCache();
+        playPauseIcon.style.opacity = "1";
+        updatePlayPauseIcon();
+      });
+
+      videoContainer.addEventListener("mouseleave", function() {
+        isMouseInside = false;
+        playPauseIcon.style.opacity = "0";
+      });
+
+      window.addEventListener("resize", invalidateRectCache);
+      document.addEventListener("mousemove", function(e) {
+        if (isMouseInside) {
+          trackLocation(e);
+        }
+      }, false);
+
+      videoContainer.addEventListener("touchstart", function(e) {
+        var x = e.touches[0].pageX;
+        var y = e.touches[0].pageY;
+        if (isInsideContainer(x, y)) {
+          isMouseInside = true;
+          trackLocation(e);
+        }
+      }, false);
+
+      document.addEventListener("touchmove", function(e) {
+        if (isMouseInside) {
+          trackLocation(e);
+        }
+      }, false);
+
+      document.addEventListener("touchend", function() {
+        isMouseInside = false;
+      }, false);
+
+      v.addEventListener("play", updatePlayPauseIcon);
+      v.addEventListener("pause", updatePlayPauseIcon);
+      v2.addEventListener("play", updatePlayPauseIcon);
+      v2.addEventListener("pause", updatePlayPauseIcon);
+
+      v.addEventListener("loadedmetadata", updateContainerSize);
+      v.addEventListener("loadeddata", updateContainerSize);
+      v.addEventListener("resize", updateContainerSize);
+      v2.addEventListener("loadedmetadata", updateContainerSize);
+      v2.addEventListener("loadeddata", updateContainerSize);
+      v2.addEventListener("resize", updateContainerSize);
+
+      window.addEventListener("resize", function() {
+        updateContainerSize();
+        invalidateRectCache();
+      });
+
+      switchMethod(0);
+      switchVideo(0);
+    })();
+  </script>
+</body>
+</html>
