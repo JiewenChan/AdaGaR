@@ -185,6 +185,9 @@
   (function() {
     var sliderFrame = document.getElementById("video-result-frame");
     if (!sliderFrame) return;
+    var sliderVersion = "v2";
+    // Bust iframe cache so the latest slider.js/html is loaded
+    sliderFrame.src = "slider.html?v=" + sliderVersion;
 
     function resizeSliderFrame() {
       if (!sliderFrame.contentWindow) return;
