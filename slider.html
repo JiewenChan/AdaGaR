@@ -50,7 +50,7 @@
       ];
 
       var currentVideoIndex = 0;
-      var currentMethodIndex = 0;
+      var currentMethodIndex = 1; // default to CoDeF vs Ours
 
       var v = document.getElementById("src");
       var v2 = document.getElementById("tgt");
@@ -303,7 +303,7 @@
         invalidateRectCache();
       });
 
-      switchMethod(0);
+      switchMethod(currentMethodIndex);
       switchVideo(0);
     })();
   </script>

@@ -29,7 +29,7 @@
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <div class="hero-text">
-        <p class="hero-kicker">DEMO</p>
+        <!-- <p class="hero-kicker">DEMO</p> -->
         <h1>AdaGaR</h1>
         <p class="hero-description">
           <b>AdaGaR</b>: <u>Ada</u>ptive <u>Ga</u>bor <u>R</u>epresentation for Dynamic Scene Reconstruction
@@ -375,6 +375,8 @@
           inputVideo.src = "static/videos/frame_interpolation_input/" + video.name + ".mp4";
           inputVideo.loop = true;
           inputVideo.autoplay = true;
+          inputVideo.muted = true;
+          inputVideo.playsInline = true;
           inputVideo.controls = true;
           inputItem.appendChild(inputLabel);
           inputItem.appendChild(inputVideo);
@@ -388,6 +390,8 @@
           savVideo.src = "static/videos/frame_interpolation_sav/" + video.name + ".mp4";
           savVideo.loop = true;
           savVideo.autoplay = true;
+          savVideo.muted = true;
+          savVideo.playsInline = true;
           savVideo.controls = true;
           savItem.appendChild(savLabel);
           savItem.appendChild(savVideo);
@@ -401,6 +405,8 @@
           oursVideo.src = "static/videos/frame_interpolation/" + video.name + ".mp4";
           oursVideo.loop = true;
           oursVideo.autoplay = true;
+          oursVideo.muted = true;
+          oursVideo.playsInline = true;
           oursVideo.controls = true;
           oursItem.appendChild(oursLabel);
           oursItem.appendChild(oursVideo);
